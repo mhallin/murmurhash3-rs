@@ -1,5 +1,5 @@
-use std::old_io::BufReader;
 use std::num::Int;
+use std::mem;
 
 fn fmix32(mut h: u32) -> u32 {
     h ^= h >> 16;
@@ -11,18 +11,23 @@ fn fmix32(mut h: u32) -> u32 {
     return h;
 }
 
+fn get_32_block(bytes: &[u8], index: usize) -> u32 {
+    let b32: &[u32] = unsafe { mem::transmute(bytes) };
+
+    return b32[index];
+}
+
 pub fn murmurhash3_x86_32(bytes: &[u8], seed: u32) -> u32 {
     let c1 = 0xcc9e2d51u32;
     let c2 = 0x1b873593u32;
     let read_size = 4;
+    let len = bytes.len() as u32;
+    let block_count = len / read_size;
 
     let mut h1 = seed;
 
-    let mut reader = BufReader::new(bytes);
-    let mut remaining = bytes.len();
-
-    while remaining >= read_size {
-        let mut k1 = reader.read_le_u32().unwrap();
+    for i in range(0, block_count as usize) {
+        let mut k1 = get_32_block(bytes, i);
 
         k1 *= c1;
         k1 = k1.rotate_left(15);
@@ -31,16 +36,13 @@ pub fn murmurhash3_x86_32(bytes: &[u8], seed: u32) -> u32 {
         h1 ^= k1;
         h1 = h1.rotate_left(13);
         h1 = h1 * 5 + 0xe6546b64;
-
-        remaining -= read_size;
     }
 
-    let tail = reader.read_to_end().unwrap();
     let mut k1 = 0u32;
 
-    if tail.len() == 3 { k1 ^= (tail[2] as u32) << 16; }
-    if tail.len() >= 2 { k1 ^= (tail[1] as u32) << 8; }
-    if tail.len() >= 1 { k1 ^=  tail[0] as u32;
+    if len & 3 == 3 { k1 ^= (bytes[(block_count * read_size) as usize + 2] as u32) << 16; }
+    if len & 3 >= 2 { k1 ^= (bytes[(block_count * read_size) as usize + 1] as u32) << 8; }
+    if len & 3 >= 1 { k1 ^=  bytes[(block_count * read_size) as usize + 0] as u32;
         k1 *= c1;
         k1 = k1.rotate_left(15);
         k1 *= c2;

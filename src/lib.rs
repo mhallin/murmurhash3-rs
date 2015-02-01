@@ -1,4 +1,3 @@
-#![feature(io)]
 #![feature(core)]
 // #![feature(hash)]
 // #![feature(collections)]
