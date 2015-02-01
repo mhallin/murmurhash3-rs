@@ -25,7 +25,6 @@ impl Murmur3HashState {
 }
 
 
-#[allow(unstable)]
 impl Hasher for Murmur3Hasher {
     type Output = u64;
 
@@ -38,14 +37,12 @@ impl Hasher for Murmur3Hasher {
     }
 }
 
-#[allow(unstable)]
 impl Writer for Murmur3Hasher {
     fn write(&mut self, bytes: &[u8]) {
         self.bytes.push_all(bytes);
     }
 }
 
-#[allow(unstable)]
 impl HashState for Murmur3HashState {
     type Hasher = Murmur3Hasher;
 
@@ -60,7 +57,6 @@ mod test {
     use std::collections::hash_map::HashMap;
 
     #[test]
-    #[allow(unstable)]
     fn use_in_hashmap() {
         let mut hashmap = HashMap::with_hash_state(Murmur3HashState::new());
         hashmap.insert("one", 1);

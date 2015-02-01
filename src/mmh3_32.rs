@@ -1,4 +1,4 @@
-use std::io::BufReader;
+use std::old_io::BufReader;
 use std::num::Int;
 
 fn fmix32(mut h: u32) -> u32 {
@@ -11,7 +11,6 @@ fn fmix32(mut h: u32) -> u32 {
     return h;
 }
 
-#[allow(unstable)]
 pub fn murmurhash3_x86_32(bytes: &[u8], seed: u32) -> u32 {
     let c1 = 0xcc9e2d51u32;
     let c2 = 0x1b873593u32;

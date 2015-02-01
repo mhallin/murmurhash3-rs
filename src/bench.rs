@@ -1,6 +1,9 @@
-extern crate murmurhash3;
+#![feature(test)]
+#![feature(core)]
+#![feature(rand)]
+#![feature(std_misc)]
 
-#[allow(unstable)]
+extern crate murmurhash3;
 extern crate test;
 
 use std::time::duration::Duration;
@@ -11,14 +14,12 @@ use test::black_box;
 
 use murmurhash3::murmurhash3_x64_128;
 
-#[allow(unstable)]
 fn test_iter(bytes: &[u8], seed: u64) -> Duration {
     return Duration::span(|| {
         black_box(murmurhash3_x64_128(bytes, seed));
     });
 }
 
-#[allow(unstable)]
 fn main() {
     println!("MurmurHash3 x64 128bit Speed Test");
 

@@ -1,4 +1,4 @@
-use std::io::BufReader;
+use std::old_io::BufReader;
 use std::num::Int;
 
 fn fmix64(mut k: u64) -> u64 {
@@ -11,7 +11,6 @@ fn fmix64(mut k: u64) -> u64 {
     return k;
 }
 
-#[allow(unstable)]
 pub fn murmurhash3_x64_128(bytes: &[u8], seed: u64) -> (u64, u64) {
     let c1 = 0x87c37b91114253d5u64;
     let c2 = 0x4cf5ad432745937fu64;
