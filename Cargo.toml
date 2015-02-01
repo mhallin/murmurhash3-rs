@@ -1,0 +1,5 @@
+[package]
+
+name = "murmurhash3"
+version = "0.0.1"
+authors = ["mhallin <mhallin@gmail.com>"]
