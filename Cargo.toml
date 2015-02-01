@@ -11,3 +11,11 @@ path = "src/lib.rs"
 [[bin]]
 name = "murmurhash3-bench"
 path = "src/bench.rs"
+
+
+[profile.test]
+opt-level = 3
+
+[profile.release]
+debug = true
+opt-level = 3
