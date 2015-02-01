@@ -3,3 +3,11 @@
 name = "murmurhash3"
 version = "0.0.1"
 authors = ["mhallin <mhallin@gmail.com>"]
+
+[lib]
+name = "murmurhash3"
+path = "src/lib.rs"
+
+[[bin]]
+name = "murmurhash3-bench"
+path = "src/bench.rs"
