@@ -24,7 +24,7 @@ fn main() {
     println!("MurmurHash3 x64 128bit Speed Test");
 
     let mut total_duration = Duration::zero();
-    let trials = 1500;
+    let trials = 10000;
     let mut data = [0u8; 256 * 1024];
 
     for i in range(0, trials) {
