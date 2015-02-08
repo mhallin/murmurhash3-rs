@@ -12,14 +12,5 @@ homepage = "https://github.com/mhallin/murmurhash3-rs"
 name = "murmurhash3"
 path = "src/lib.rs"
 
-[[bin]]
-name = "murmurhash3-bench"
-path = "src/bench.rs"
-
-
-[profile.test]
-opt-level = 3
-
-[profile.release]
-debug = true
-opt-level = 3
+[dev-dependencies]
+rand = "*"

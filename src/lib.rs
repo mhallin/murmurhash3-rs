@@ -1,6 +1,8 @@
 #![feature(core)]
+#![feature(test)]
 // #![feature(hash)]
 // #![feature(collections)]
+
 
 mod mmh3_128;
 mod mmh3_32;
