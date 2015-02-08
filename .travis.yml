@@ -1,1 +1,6 @@
 language: rust
+
+script:
+  - cargo build --verbose
+  - cargo bench --no-run --verbose
+  - cargo test --verbose
