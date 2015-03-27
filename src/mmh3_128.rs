@@ -3,9 +3,9 @@ use std::mem;
 
 fn fmix64(mut k: u64) -> u64 {
     k ^= k >> 33;
-    k *= 0xff51afd7ed558ccdu64;
+    k = k.wrapping_mul(0xff51afd7ed558ccdu64);
     k ^= k >> 33;
-    k *= 0xc4ceb9fe1a85ec53u64;
+    k = k.wrapping_mul(0xc4ceb9fe1a85ec53u64);
     k ^= k >> 33;
 
     return k;
@@ -26,27 +26,36 @@ pub fn murmurhash3_x64_128(bytes: &[u8], seed: u64) -> (u64, u64) {
 
     let (mut h1, mut h2) = (seed, seed);
 
-    for i in range(0, block_count as usize) {
-        let (mut k1, mut k2) = get_128_block(bytes, i * 2);
+    let mut range = 0..block_count as usize;
+    loop {
+        match range.next() {
+            Some(i) => {
+                let (mut k1, mut k2) = get_128_block(bytes, i * 2);
 
-        k1 *= c1;
-        k1 = k1.rotate_left(31);
-        k1 *= c2;
-        h1 ^= k1;
+                k1 = k1.wrapping_mul(c1);
+                k1 = k1.rotate_left(31);
+                k1 = k1.wrapping_mul(c2);
+                h1 ^= k1;
 
-        h1 = h1.rotate_left(27);
-        h1 += h2;
-        h1 = h1 * 5 + 0x52dce729;
+                h1 = h1.rotate_left(27);
+                h1 = h1.wrapping_add(h2);
+                h1 = h1.wrapping_mul(5);
+                h1 = h1.wrapping_add(0x52dce729);
 
-        k2 *= c2;
-        k2 = k2.rotate_left(33);
-        k2 *= c1;
-        h2 ^= k2;
+                k2 = k2.wrapping_mul(c2);
+                k2 = k2.rotate_left(33);
+                k2 = k2.wrapping_mul(c1);
+                h2 ^= k2;
 
-        h2 = h2.rotate_left(31);
-        h2 += h1;
-        h2 = h2 * 5 + 0x38495ab5;
+                h2 = h2.rotate_left(31);
+                h2 = h2.wrapping_add(h1);
+                h2 = h2.wrapping_mul(5);
+                h2 = h2.wrapping_add(0x38495ab5);
+            },
+            None => { break }
+        }
     }
+
 
     let (mut k1, mut k2) = (0u64, 0u64);
 
@@ -57,9 +66,9 @@ pub fn murmurhash3_x64_128(bytes: &[u8], seed: u64) -> (u64, u64) {
     if len & 15 >= 11 { k2 ^= (bytes[(block_count * read_size) as usize + 10] as u64) << 16; }
     if len & 15 >= 10 { k2 ^= (bytes[(block_count * read_size) as usize +  9] as u64) <<  8; }
     if len & 15 >=  9 { k2 ^=  bytes[(block_count * read_size) as usize +  8] as u64;
-        k2 *= c2;
+        k2 = k2.wrapping_mul(c2);
         k2 = k2.rotate_left(33);
-        k2 *= c1;
+        k2 = k2.wrapping_mul(c1);
         h2 ^= k2;
     }
 
@@ -71,23 +80,23 @@ pub fn murmurhash3_x64_128(bytes: &[u8], seed: u64) -> (u64, u64) {
     if len & 15 >= 3 { k1 ^= (bytes[(block_count * read_size) as usize + 2] as u64) << 16; }
     if len & 15 >= 2 { k1 ^= (bytes[(block_count * read_size) as usize + 1] as u64) <<  8; }
     if len & 15 >= 1 { k1 ^=  bytes[(block_count * read_size) as usize + 0] as u64;
-        k1 *= c1;
+        k1 = k1.wrapping_mul(c1);
         k1 = k1.rotate_left(31);
-        k1 *= c2;
+        k1 = k1.wrapping_mul(c2);
         h1 ^= k1;
     }
 
     h1 ^= bytes.len() as u64;
     h2 ^= bytes.len() as u64;
 
-    h1 += h2;
-    h2 += h1;
+    h1 = h1.wrapping_add(h2);
+    h2 = h2.wrapping_add(h1);
 
     h1 = fmix64(h1);
     h2 = fmix64(h2);
 
-    h1 += h2;
-    h2 += h1;
+    h1 = h1.wrapping_add(h2);
+    h2 = h2.wrapping_add(h1);
 
     return (h1, h2);
 }
@@ -152,7 +161,7 @@ mod test {
     }
 
     fn run_bench(b: &mut Bencher, size: u64) {
-        let mut data: Vec<u8> = FromIterator::from_iter(range(0, size).map(|_| 0u8));
+        let mut data: Vec<u8> = FromIterator::from_iter((0..size).map(|_| 0u8));
         rand::thread_rng().fill_bytes(data.as_mut_slice());
 
         b.bytes = size;

@@ -3,9 +3,9 @@ use std::mem;
 
 fn fmix32(mut h: u32) -> u32 {
     h ^= h >> 16;
-    h *= 0x85ebca6b;
+    h = h.wrapping_mul(0x85ebca6b);
     h ^= h >> 13;
-    h *= 0xc2b2ae35;
+    h = h.wrapping_mul(0xc2b2ae35);
     h ^= h >> 16;
 
     return h;
@@ -26,26 +26,32 @@ pub fn murmurhash3_x86_32(bytes: &[u8], seed: u32) -> u32 {
 
     let mut h1 = seed;
 
-    for i in range(0, block_count as usize) {
-        let mut k1 = get_32_block(bytes, i);
+    let mut range = 0..block_count as usize;
+    loop {
+        match range.next() {
+            Some(i) => {
+                let mut k1 = get_32_block(bytes, i);
 
-        k1 *= c1;
-        k1 = k1.rotate_left(15);
-        k1 *= c2;
+                k1 = k1.wrapping_mul(c1);
+                k1 = k1.rotate_left(15);
+                k1 = k1.wrapping_mul(c2);
 
-        h1 ^= k1;
-        h1 = h1.rotate_left(13);
-        h1 = h1 * 5 + 0xe6546b64;
+                h1 ^= k1;
+                h1 = h1.rotate_left(13);
+                h1 = h1.wrapping_mul(5);
+                h1 = h1.wrapping_add(0xe6546b64)
+            },
+            None => { break }
+        }
     }
-
     let mut k1 = 0u32;
 
     if len & 3 == 3 { k1 ^= (bytes[(block_count * read_size) as usize + 2] as u32) << 16; }
     if len & 3 >= 2 { k1 ^= (bytes[(block_count * read_size) as usize + 1] as u32) << 8; }
     if len & 3 >= 1 { k1 ^=  bytes[(block_count * read_size) as usize + 0] as u32;
-        k1 *= c1;
+        k1 = k1.wrapping_mul(c1);
         k1 = k1.rotate_left(15);
-        k1 *= c2;
+        k1 = k1.wrapping_mul(c2);
         h1 ^= k1;
     }
 
@@ -91,7 +97,7 @@ mod test {
     }
 
     fn run_bench(b: &mut Bencher, size: u64) {
-        let mut data: Vec<u8> = FromIterator::from_iter(range(0, size).map(|_| 0u8));
+        let mut data: Vec<u8> = FromIterator::from_iter((0..size).map(|_| 0u8));
         rand::thread_rng().fill_bytes(data.as_mut_slice());
 
         b.bytes = size;
