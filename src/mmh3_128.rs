@@ -26,34 +26,29 @@ pub fn murmurhash3_x64_128(bytes: &[u8], seed: u64) -> (u64, u64) {
 
     let (mut h1, mut h2) = (seed, seed);
 
-    let mut range = 0..block_count as usize;
-    loop {
-        match range.next() {
-            Some(i) => {
-                let (mut k1, mut k2) = get_128_block(bytes, i * 2);
 
-                k1 = k1.wrapping_mul(c1);
-                k1 = k1.rotate_left(31);
-                k1 = k1.wrapping_mul(c2);
-                h1 ^= k1;
+    for i in 0..block_count as usize {
+        let (mut k1, mut k2) = get_128_block(bytes, i * 2);
 
-                h1 = h1.rotate_left(27);
-                h1 = h1.wrapping_add(h2);
-                h1 = h1.wrapping_mul(5);
-                h1 = h1.wrapping_add(0x52dce729);
+        k1 = k1.wrapping_mul(c1);
+        k1 = k1.rotate_left(31);
+        k1 = k1.wrapping_mul(c2);
+        h1 ^= k1;
 
-                k2 = k2.wrapping_mul(c2);
-                k2 = k2.rotate_left(33);
-                k2 = k2.wrapping_mul(c1);
-                h2 ^= k2;
+        h1 = h1.rotate_left(27);
+        h1 = h1.wrapping_add(h2);
+        h1 = h1.wrapping_mul(5);
+        h1 = h1.wrapping_add(0x52dce729);
 
-                h2 = h2.rotate_left(31);
-                h2 = h2.wrapping_add(h1);
-                h2 = h2.wrapping_mul(5);
-                h2 = h2.wrapping_add(0x38495ab5);
-            },
-            None => { break }
-        }
+        k2 = k2.wrapping_mul(c2);
+        k2 = k2.rotate_left(33);
+        k2 = k2.wrapping_mul(c1);
+        h2 ^= k2;
+
+        h2 = h2.rotate_left(31);
+        h2 = h2.wrapping_add(h1);
+        h2 = h2.wrapping_mul(5);
+        h2 = h2.wrapping_add(0x38495ab5);
     }
 
 

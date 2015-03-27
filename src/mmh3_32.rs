@@ -26,23 +26,17 @@ pub fn murmurhash3_x86_32(bytes: &[u8], seed: u32) -> u32 {
 
     let mut h1 = seed;
 
-    let mut range = 0..block_count as usize;
-    loop {
-        match range.next() {
-            Some(i) => {
-                let mut k1 = get_32_block(bytes, i);
+    for i in 0..block_count as usize {
+        let mut k1 = get_32_block(bytes, i);
 
-                k1 = k1.wrapping_mul(c1);
-                k1 = k1.rotate_left(15);
-                k1 = k1.wrapping_mul(c2);
+        k1 = k1.wrapping_mul(c1);
+        k1 = k1.rotate_left(15);
+        k1 = k1.wrapping_mul(c2);
 
-                h1 ^= k1;
-                h1 = h1.rotate_left(13);
-                h1 = h1.wrapping_mul(5);
-                h1 = h1.wrapping_add(0xe6546b64)
-            },
-            None => { break }
-        }
+        h1 ^= k1;
+        h1 = h1.rotate_left(13);
+        h1 = h1.wrapping_mul(5);
+        h1 = h1.wrapping_add(0xe6546b64)
     }
     let mut k1 = 0u32;
 
