@@ -1,13 +1,13 @@
 #![feature(core)]
 #![feature(test)]
-// #![feature(hash)]
-// #![feature(collections)]
+#![feature(std_misc)]
+#![feature(collections)]
 
 
 mod mmh3_128;
 mod mmh3_32;
-// mod hasher;
+mod hasher;
 
 pub use mmh3_128::murmurhash3_x64_128;
 pub use mmh3_32::murmurhash3_x86_32;
-// pub use hasher::Murmur3HashState;
+pub use hasher::Murmur3HashState;

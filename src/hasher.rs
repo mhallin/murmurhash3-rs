@@ -1,10 +1,9 @@
 use std::hash::Hasher;
-use std::hash::Writer;
 use std::collections::hash_state::HashState;
 
 use mmh3_32::murmurhash3_x86_32;
 
-struct Murmur3Hasher {
+pub struct Murmur3Hasher {
     seed: u32,
     bytes: Vec<u8>,
 }
@@ -26,18 +25,10 @@ impl Murmur3HashState {
 
 
 impl Hasher for Murmur3Hasher {
-    type Output = u64;
-
-    fn reset(&mut self) {
-        self.bytes = vec![];
-    }
-
     fn finish(&self) -> u64 {
-        return murmurhash3_x86_32(self.bytes.as_slice(), self.seed) as u64;
+        return murmurhash3_x86_32(&self.bytes, self.seed) as u64;
     }
-}
 
-impl Writer for Murmur3Hasher {
     fn write(&mut self, bytes: &[u8]) {
         self.bytes.push_all(bytes);
     }
