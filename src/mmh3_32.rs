@@ -1,4 +1,3 @@
-use std::num::Int;
 use std::mem;
 
 fn fmix32(mut h: u32) -> u32 {

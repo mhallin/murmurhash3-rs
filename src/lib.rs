@@ -1,4 +1,3 @@
-#![feature(core)]
 #![feature(test)]
 #![feature(std_misc)]
 #![feature(collections)]

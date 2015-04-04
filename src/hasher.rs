@@ -8,7 +8,7 @@ pub struct Murmur3Hasher {
     bytes: Vec<u8>,
 }
 
-#[derive(Copy)]
+#[derive(Clone, Copy)]
 pub struct Murmur3HashState {
     seed: u32,
 }

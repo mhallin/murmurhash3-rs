@@ -1,4 +1,3 @@
-use std::num::Int;
 use std::mem;
 
 fn fmix64(mut k: u64) -> u64 {
