@@ -10,6 +10,6 @@ matrix:
       env: FEATURES=nightly BENCH=true
 
 script:
-  - cargo build --verbose --features $FEATURES
-  - cargo test --verbose --features $FEATURES
-  - '[ "$BENCH" == "true" ] && cargo bench --no-run --verbose --features $FEATURES'
+  - cargo build --verbose --features ${FEATURES:-""}
+  - cargo test --verbose --features ${FEATURES:-""}
+  - '[ "$BENCH" == "true" ] && cargo bench --no-run --verbose --features ${FEATURES:-""}'
