@@ -10,13 +10,13 @@ Unreleased_
 * Add ``nightly`` feature flag, support both stable, beta, and nightly
 
 
-0.0.4_ — 2014-04-04
+0.0.4_ — 2015-04-04
 ----------
 
 * Enable ``HashState`` implementation
 
 
-0.0.3_ — 2014-03-29
+0.0.3_ — 2015-03-29
 ------------------
 
 * PR1_: Fixes to keep Rust Nightly compatibility, thanks polyfractal_
