@@ -1,6 +1,15 @@
 language: rust
+rust:
+  - stable
+  - beta
+  - nightly
+
+matrix:
+  include:
+    - rust: nightly
+      env: FEATURES=nightly BENCH=true
 
 script:
-  - cargo build --verbose
-  - cargo bench --no-run --verbose
-  - cargo test --verbose
+  - cargo build --verbose --features $FEATURES
+  - cargo test --verbose --features $FEATURES
+  - [ "$BENCH" == "true" ] && cargo bench --no-run --verbose --features $FEATURES
