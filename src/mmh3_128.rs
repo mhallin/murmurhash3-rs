@@ -97,15 +97,7 @@ pub fn murmurhash3_x64_128(bytes: &[u8], seed: u64) -> (u64, u64) {
 
 #[cfg(test)]
 mod test {
-    extern crate rand;
-    extern crate test;
-
-    use std::iter::FromIterator;
-
     use super::murmurhash3_x64_128;
-
-    use self::rand::Rng;
-    use self::test::{Bencher, black_box};
 
     #[test]
     fn test_empty_string() {
@@ -154,23 +146,36 @@ mod test {
             == (9455322759164802692, 17863277201603478371));
     }
 
-    fn run_bench(b: &mut Bencher, size: u64) {
-        let mut data: Vec<u8> = FromIterator::from_iter((0..size).map(|_| 0u8));
-        rand::thread_rng().fill_bytes(&mut data);
+    #[cfg(feature="nightly")]
+    mod bench {
+        extern crate rand;
+        extern crate test;
 
-        b.bytes = size;
-        b.iter(|| {
-            black_box(murmurhash3_x64_128(&data, 0));
-        });
-    }
+        use std::iter::FromIterator;
+        use self::rand::Rng;
+        use self::test::{Bencher, black_box};
 
-    #[bench]
-    fn bench_random_256k(b: &mut Bencher) {
-        run_bench(b, 256 * 1024);
-    }
+        use super::super::murmurhash3_x64_128;
 
-    #[bench]
-    fn bench_random_16b(b: &mut Bencher) {
-        run_bench(b, 16);
+        fn run_bench(b: &mut Bencher, size: u64) {
+            let mut data: Vec<u8> = FromIterator::from_iter((0..size).map(|_| 0u8));
+            rand::thread_rng().fill_bytes(&mut data);
+
+            b.bytes = size;
+            b.iter(|| {
+                black_box(murmurhash3_x64_128(&data, 0));
+            });
+        }
+
+        #[bench]
+        fn bench_random_256k(b: &mut Bencher) {
+            run_bench(b, 256 * 1024);
+        }
+
+        #[bench]
+        fn bench_random_16b(b: &mut Bencher) {
+            run_bench(b, 16);
+        }
+
     }
 }
