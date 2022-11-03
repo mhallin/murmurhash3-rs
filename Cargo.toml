@@ -13,7 +13,4 @@ name = "murmurhash3"
 path = "src/lib.rs"
 
 [dev-dependencies]
-rand = "*"
-
-[features]
-nightly = []
+rand = "0.8"

@@ -1,5 +1,4 @@
-use std::hash::Hasher;
-use std::collections::hash_state::HashState;
+use std::hash::{BuildHasher, Hasher};
 
 use mmh3_32::murmurhash3_x86_32;
 
@@ -19,10 +18,9 @@ impl Murmur3HashState {
     }
 
     pub fn with_seed(seed: u32) -> Murmur3HashState {
-        return Murmur3HashState { seed: seed };
+        return Murmur3HashState { seed };
     }
 }
-
 
 impl Hasher for Murmur3Hasher {
     fn finish(&self) -> u64 {
@@ -30,15 +28,19 @@ impl Hasher for Murmur3Hasher {
     }
 
     fn write(&mut self, bytes: &[u8]) {
-        self.bytes.push_all(bytes);
+        let mut copy = bytes.clone().to_vec();
+        self.bytes.append(&mut copy);
     }
 }
 
-impl HashState for Murmur3HashState {
+impl BuildHasher for Murmur3HashState {
     type Hasher = Murmur3Hasher;
 
-    fn hasher(&self) -> Murmur3Hasher {
-        return Murmur3Hasher { seed: self.seed, bytes: vec![] };
+    fn build_hasher(&self) -> Self::Hasher {
+        Murmur3Hasher {
+            seed: self.seed,
+            bytes: vec![],
+        }
     }
 }
 
@@ -49,13 +51,13 @@ mod test {
 
     #[test]
     fn use_in_hashmap() {
-        let mut hashmap = HashMap::with_hash_state(Murmur3HashState::new());
+        let mut hashmap = HashMap::with_capacity_and_hasher(0, Murmur3HashState::new());
         hashmap.insert("one", 1);
         hashmap.insert("two", 2);
 
-        assert!(hashmap.len() == 2);
+        assert_eq!(hashmap.len(), 2);
 
-        assert!(*hashmap.get("one").unwrap() == 1);
-        assert!(*hashmap.get("two").unwrap() == 2);
+        assert_eq!(*hashmap.get("one").unwrap(), 1);
+        assert_eq!(*hashmap.get("two").unwrap(), 2);
     }
 }

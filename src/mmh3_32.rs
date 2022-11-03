@@ -39,9 +39,14 @@ pub fn murmurhash3_x86_32(bytes: &[u8], seed: u32) -> u32 {
     }
     let mut k1 = 0u32;
 
-    if len & 3 == 3 { k1 ^= (bytes[(block_count * read_size) as usize + 2] as u32) << 16; }
-    if len & 3 >= 2 { k1 ^= (bytes[(block_count * read_size) as usize + 1] as u32) << 8; }
-    if len & 3 >= 1 { k1 ^=  bytes[(block_count * read_size) as usize + 0] as u32;
+    if len & 3 == 3 {
+        k1 ^= (bytes[(block_count * read_size) as usize + 2] as u32) << 16;
+    }
+    if len & 3 >= 2 {
+        k1 ^= (bytes[(block_count * read_size) as usize + 1] as u32) << 8;
+    }
+    if len & 3 >= 1 {
+        k1 ^= bytes[(block_count * read_size) as usize + 0] as u32;
         k1 = k1.wrapping_mul(c1);
         k1 = k1.rotate_left(15);
         k1 = k1.wrapping_mul(c2);
@@ -65,14 +70,10 @@ mod test {
 
     #[test]
     fn test_tail_lengths() {
-        assert!(murmurhash3_x86_32("1".as_bytes(), 0)
-            == 2484513939);
-        assert!(murmurhash3_x86_32("12".as_bytes(), 0)
-            == 4191350549);
-        assert!(murmurhash3_x86_32("123".as_bytes(), 0)
-            == 2662625771);
-        assert!(murmurhash3_x86_32("1234".as_bytes(), 0)
-            == 1914461635);
+        assert!(murmurhash3_x86_32("1".as_bytes(), 0) == 2484513939);
+        assert!(murmurhash3_x86_32("12".as_bytes(), 0) == 4191350549);
+        assert!(murmurhash3_x86_32("123".as_bytes(), 0) == 2662625771);
+        assert!(murmurhash3_x86_32("1234".as_bytes(), 0) == 1914461635);
     }
 
     #[test]
@@ -81,14 +82,14 @@ mod test {
             == 1004899618);
     }
 
-    #[cfg(feature="nightly")]
+    #[cfg(feature = "nightly")]
     mod bench {
         extern crate rand;
         extern crate test;
 
-        use std::iter::FromIterator;
         use self::rand::Rng;
-        use self::test::{Bencher, black_box};
+        use self::test::{black_box, Bencher};
+        use std::iter::FromIterator;
 
         use super::super::murmurhash3_x86_32;
 
